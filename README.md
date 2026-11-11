@@ -21,6 +21,15 @@ The player leaderboard uses API-Football (API-Sports).
 
 Do not put the API key in `index.html`, commit it to GitHub, or share it publicly. The key is read only by the serverless function at `/api/players`.
 
+## Connect Supabase
+
+The homepage includes a Supabase connection check at **Platform connection**. Add these values in Vercel → Project → Settings → Environment Variables:
+
+- `SUPABASE_URL` — your Supabase Project URL (for example, `https://YOUR-PROJECT.supabase.co`).
+- `SUPABASE_ANON_KEY` — the project's publishable/anon key.
+
+Save both for Production (and Preview if needed), then redeploy. The `/api/supabase-health` endpoint checks the Supabase Auth health endpoint without exposing the key in browser code. Do not use or expose the Supabase service-role key in the frontend or commit credentials to GitHub.
+
 ## What works now
 
 - Responsive white-and-gold homepage and navigation.
