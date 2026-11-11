@@ -5,7 +5,7 @@ module.exports = async (req, res) => {
   const key = process.env.API_FOOTBALL_KEY;
   if (!key) return res.status(503).json({ error: "Player statistics are not connected yet. Add API_FOOTBALL_KEY in Vercel → Settings → Environment Variables, then redeploy." });
   const category = String(req.query.category || "scorers");
-  const endpoints = { scorers:"topscorers", assists:"topassists", cleansheets:"topcleansheets", yellow:"topyellowcards", red:"topredcards" };
+  const endpoints = { scorers:"topscorers", assists:"topassists", yellow:"topyellowcards", red:"topredcards" };
   if (!endpoints[category]) return res.status(400).json({ error: "Unsupported statistics category." });
   const league = String(req.query.league || "39");
   const season = String(req.query.season || "2026");
@@ -21,7 +21,6 @@ module.exports = async (req, res) => {
       let value = 0;
       if (category === "scorers") value = goals.total || 0;
       if (category === "assists") value = goals.assists || 0;
-      if (category === "cleansheets") value = goals.saves === null ? 0 : (goals.conceded === 0 ? games.appearences || 0 : (stat.goals && stat.goals.saves ? stat.goals.saves : 0));
       if (category === "yellow") value = cards.yellow || 0;
       if (category === "red") value = cards.red || 0;
       return { name: row.player && row.player.name, photo: row.player && row.player.photo, team: stat.team && stat.team.name, appearances: games.appearences || 0, value, rating: games.rating ? Number(games.rating).toFixed(2) : "—" };
