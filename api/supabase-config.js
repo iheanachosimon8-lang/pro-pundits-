@@ -12,7 +12,7 @@ module.exports = async (_req, res) => {
     if (parsed.protocol !== "https:" || !parsed.hostname.endsWith(".supabase.co")) {
       return res.status(400).json({ message: "SUPABASE_URL must be your HTTPS Supabase project URL." });
     }
-    return res.status(200).json({ url: url.replace(/\\/+$/, ""), anonKey });
+    return res.status(200).json({ url: url.replace(/\/+$/, ""), anonKey });
   } catch {
     return res.status(400).json({ message: "SUPABASE_URL is not a valid URL." });
   }
