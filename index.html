@@ -61,11 +61,21 @@ body{background:radial-gradient(ellipse at 80% -10%,#f3e8c9 0,transparent 38%),v
 </style>
 </head>
 <body>
-<header class="shell topbar"><a class="brand" href="#"><span class="brandmark">P</span><span><b>PRO</b> PUNDITS</span></a><nav class="navlinks"><a class="active" href="#home">Home</a><a href="#games">Predictions</a><a href="#insights">Insights</a><a href="#players">Player stats</a><a href="#membership">Membership</a></nav><div class="top-actions"><button class="iconbtn" aria-label="Search" onclick="document.getElementById('search').focus()">⌕</button><a class="outlinebtn" href="#slip">My Slip <span id="slipcount">0</span></a><a class="primary" href="#games">Explore picks</a></div></header>
+<header class="shell topbar"><a class="brand" href="#"><span class="brandmark">P</span><span><b>PRO</b> PUNDITS</span></a><nav class="navlinks"><a class="active" href="#home">Home</a><a href="#match-predictions">Predictions</a><a href="#insights">Insights</a><a href="#players">Player stats</a><a href="#membership">Membership</a></nav><div class="top-actions"><button class="iconbtn" aria-label="Search" onclick="document.getElementById('search').focus()">⌕</button><a class="outlinebtn" href="#slip">My Slip <span id="slipcount">0</span></a><a class="primary" href="#games">Explore picks</a></div></header>
 <main class="shell" id="home">
 <section class="hero"><div class="hero-copy"><div class="eyebrow">Clarity · Context · Competition</div><h1>See the game.<br><span>Think smarter.</span></h1><p class="lead">Sports previews, player trends and thoughtful match analysis — bringing the details behind every prediction into one premium experience.</p><div class="hero-ctas"><a class="primary" href="#games">Explore predictions ↗</a><a class="outlinebtn" href="#insights">How our analysis works</a></div><div class="trustline"><span>◈ Evidence-led insights</span><span>◈ Clear risk context</span><span>◈ Football & basketball</span></div></div>
 <aside class="hero-card"><div class="card-head"><span>FEATURED MATCH PREVIEW</span><span class="live">● EDITORIAL</span></div><div class="matchteams"><div><div class="team-badge">⚽</div><div class="teamname">HOME</div><div class="matchmeta">Home side</div></div><div class="vs">VS</div><div><div class="team-badge">⚽</div><div class="teamname">AWAY</div><div class="matchmeta">Away side</div></div></div><div class="preview-note"><strong>THE PUNDIT VIEW</strong><p>Good analysis looks beyond a headline prediction. Compare recent form, team news, tactical matchups and the risks that could change the game.</p></div></aside></section>
 <div class="statsstrip"><div class="stat"><strong>2</strong><span>Sports categories</span></div><div class="stat"><strong>360°</strong><span>Match perspective</span></div><div class="stat"><strong>Clear</strong><span>Risk explanations</span></div></div>
+<section class="section" id="match-predictions">
+ <div class="section-head"><div><div class="eyebrow">Match prediction centre</div><h2>Match predictions</h2><p>Review match markets, supporting factors and risk notes before making your own decision.</p></div><a class="textlink" href="#games">Browse markets →</a></div>
+ <div class="strategygrid">
+  <article class="strategy"><i class="dot"></i><b>Match result</b><small>Home win, draw or away win — compare recent form and team news.</small></article>
+  <article class="strategy"><i class="dot"></i><b>Goals market</b><small>Over/under goals and both teams to score — check scoring trends.</small></article>
+  <article class="strategy"><i class="dot"></i><b>Double chance</b><small>Two-result selections — still carry risk and are never guaranteed.</small></article>
+  <article class="strategy"><i class="dot"></i><b>Featured analysis</b><small>Highlight selections only when fixture data and reasoning have been reviewed.</small></article>
+ </div>
+ <div class="player-status"><strong>Featured predictions are being prepared.</strong><br>Live fixtures and evidence-based match forecasts are not connected yet. The cards below are examples, not today's confirmed matches or guaranteed outcomes.</div>
+</section>
 <section class="section" id="games"><div class="section-head"><div><div class="eyebrow">Build your slip</div><h2>Explore match insights</h2><p>Choose a sport, browse sample markets and build a personal shortlist.</p></div><a class="textlink" href="#slip">View my slip →</a></div>
 <div class="filters" id="datefilters"><button class="chip selected" data-date="Today">Today</button><button class="chip" data-date="Tomorrow">Tomorrow</button><button class="chip" data-date="Friday">Friday</button><button class="chip" data-date="Weekend">Weekend</button></div>
 <div class="sportrow"><button class="sport selected" data-sport="Football">⚽ Football <small>Match previews & markets</small></button><button class="sport" data-sport="Basketball">🏀 Basketball <small>Player props & trends</small></button></div>
@@ -90,7 +100,7 @@ body{background:radial-gradient(ellipse at 80% -10%,#f3e8c9 0,transparent 38%),v
 <section class="section" id="membership"><div class="section-head"><div><div class="eyebrow">The Pro Pundits edge</div><h2>Insight for every kind of fan.</h2><p>Thoughtful analysis, clear explanations and a premium reading experience.</p></div></div><div class="strategygrid"><article class="strategy"><i class="dot"></i><b>Match previews</b><small>Form, context and tactical talking points.</small></article><article class="strategy"><i class="dot"></i><b>Player trends</b><small>Explore role, minutes and performance context.</small></article><article class="strategy"><i class="dot"></i><b>Quick slips</b><small>Collect markets to review in one place.</small></article><article class="strategy"><i class="dot"></i><b>Premium analysis</b><small>Membership details will be announced soon.</small></article></div></section>
 
 <section class="section" id="authSection">
- <div class="section-head"><div><div class="eyebrow">Your Pro Pundits account</div><h2>Sign in or create an account</h2><p>Register with your email and password. Supabase securely manages authentication.</p></div></div>
+ <div class="section-head"><div><div class="eyebrow">Your Pro Pundits account</div><h2>Sign in or create an account</h2><p>Create an account or sign in to access your Pro Pundits profile.</p></div></div>
  <div class="auth-panel">
   <div id="authSignedOut">
    <form class="auth-form" id="authForm">
@@ -100,13 +110,13 @@ body{background:radial-gradient(ellipse at 80% -10%,#f3e8c9 0,transparent 38%),v
    </form>
   </div>
   <div id="authSignedIn" hidden><div class="auth-user"><div><strong>You're signed in</strong><div id="authUserEmail" class="auth-message"></div></div><button class="outlinebtn" id="authSignOut" type="button">Sign out</button></div></div>
-  <p id="authMessage" class="auth-message" role="status">Loading secure account services…</p>
+  <p id="authMessage" class="auth-message" role="status">Preparing your account…</p>
  </div>
 </section>
-<section class="section" id="services"><div class="section-head"><div><div class="eyebrow">Platform connection</div><h2>Supabase services</h2><p>Check whether your secure Supabase project settings are connected to this deployment.</p></div><button class="outlinebtn" id="checkSupabase" type="button">Check connection</button></div><div id="supabaseStatus" class="player-status">Checking Supabase configuration…</div><p class="player-footnote">Your Supabase URL and anon key must be added as Vercel environment variables. Never place a service-role key in the website or GitHub.</p></section>
+
 <div class="disclaimer"><strong>Important:</strong> All cards currently shown are illustrative interface examples, not live fixtures, verified statistics or betting advice. Sports outcomes are uncertain; no prediction is guaranteed. Check independent sources, follow local laws and gamble responsibly. 18+ where required.</div>
 </main><footer class="shell footer"><span>© <span id="year"></span> Pro Pundits. Built for smarter sports conversations.</span><span>White & gold edition · Analysis without guarantees</span></footer>
-<nav class="bottomnav"><a class="active" href="#home"><span>⌂</span>Home</a><a href="#games"><span>⌕</span>Browse</a><a href="#players"><span>★</span>Players</a><a href="#slip"><span>▤</span>My Slip</a><a href="#membership"><span>◎</span>Profile</a></nav><div class="toast" id="toast" role="status"></div>
+<nav class="bottomnav"><a class="active" href="#home"><span>⌂</span>Home</a><a href="#match-predictions"><span>⌕</span>Predictions</a><a href="#players"><span>★</span>Players</a><a href="#slip"><span>▤</span>My Slip</a><a href="#membership"><span>◎</span>Profile</a></nav><div class="toast" id="toast" role="status"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const samples=[
@@ -173,7 +183,7 @@ async function initAuth(){
   const {data:{session}}=await authClient.auth.getSession();
   showAuthSession(session);
   authClient.auth.onAuthStateChange((_event,session)=>showAuthSession(session));
-  msg.textContent="Account services are ready. Create an account or sign in.";
+  msg.textContent="Your account is ready. Create an account or sign in.";
  }catch(e){msg.textContent=e.message||"Could not initialize account services.";msg.classList.add("error");}
 }
 function showAuthSession(session){
@@ -189,7 +199,7 @@ $("authToggle").addEventListener("click",()=>{
  $("authMessage").classList.remove("error");
 });
 $("authForm").addEventListener("submit",async e=>{
- e.preventDefault();if(!authClient){$("authMessage").textContent="Account services are not ready. Refresh and try again.";return;}
+ e.preventDefault();if(!authClient){$("authMessage").textContent="Your account could not be loaded. Refresh and try again.";return;}
  const email=$("authEmail").value.trim(),password=$("authPassword").value;
  $("authSubmit").disabled=true;$("authMessage").classList.remove("error");$("authMessage").textContent="Please wait…";
  try{
