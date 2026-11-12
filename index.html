@@ -171,7 +171,10 @@ async function loadLiveScores(){
   const data=await response.json();
   if(!response.ok)throw new Error(data.error||"Live scores unavailable.");
   const live=data.live||[];
-  box.innerHTML=live.length?live.map(f=>'<article class="match-card"><div class="match-league">● LIVE · '+safeText(f.league)+'</div><div class="match-pair">'+safeText(f.home)+' vs '+safeText(f.away)+'</div><div class="live-score">'+safeText(f.homeScore??0)+' – '+safeText(f.awayScore??0)+'</div><div class="match-meta">'+safeText(f.elapsed==null?"":f.elapsed+"′")+' · '+safeText(f.status)+'</div></article>').join(""):'<div class="player-status">No live matches detected right now. Scores will refresh automatically.</div>';
+  box.innerHTML=live.length?live.map(f=>{
+   const signals=(f.signals||[]).map(e=>'<div class="match-meta">'+(e.signal==="penalty"?"🚩 PENALTY":"⚽ GOAL")+' · '+safeText(e.minute==null?"":e.minute+(e.extra?"+"+e.extra:"")+"′")+' · '+safeText(e.team||"")+(e.player?" · "+safeText(e.player):"")+' <span>'+safeText(e.detail||"")+'</span></div>').join("");
+   return '<article class="match-card"><div class="match-league">● LIVE · '+safeText(f.league)+'</div><div class="match-pair">'+safeText(f.home)+' vs '+safeText(f.away)+'</div><div class="live-score">'+safeText(f.homeScore??0)+' – '+safeText(f.awayScore??0)+'</div><div class="match-meta">'+safeText(f.elapsed==null?"":f.elapsed+"′")+' · '+safeText(f.status)+'</div>'+(signals?'<div class="match-events">'+signals+'</div>':'')+'</article>';
+  }).join(""):'<div class="player-status">No live matches detected right now. Scores will refresh automatically.</div>';
   $("matchUpdated").textContent="Live scores checked "+new Date().toLocaleTimeString("en-NG",{timeZone:"Africa/Lagos"})+" · refreshes every minute";
  }catch(err){box.innerHTML='<div class="player-status error">'+safeText(err.message)+'</div>';}
 }
