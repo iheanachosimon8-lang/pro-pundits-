@@ -58,6 +58,8 @@ body{background:radial-gradient(ellipse at 80% -10%,#f3e8c9 0,transparent 38%),v
 .auth-panel{border:1px solid var(--line);background:#fff;border-radius:18px;padding:22px;max-width:560px}
 .auth-form{display:grid;gap:12px}.auth-form input{width:100%;padding:13px;border:1px solid var(--line);border-radius:10px;background:#fff;color:#25231f}
 .auth-actions{display:flex;gap:10px;flex-wrap:wrap}.auth-message{font-size:13px;color:var(--muted);margin-top:10px}.auth-message.error{color:#a33}.auth-user{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+
+.match-controls{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:10px 0 20px}.match-controls label{font-size:12px;color:var(--muted);font-weight:800}.match-controls input{display:block;margin-top:5px;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:#25231f}.match-muted,.match-subhead span{font-size:12px;color:var(--muted)}.match-subhead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:22px 0 12px}.match-subhead h3{font-size:18px;margin:0}.match-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.match-card{border:1px solid var(--line);border-radius:16px;padding:16px;background:#fff;min-width:0}.match-card.featured{border-color:#c4a052;background:linear-gradient(145deg,#fffdf7,#f8f0df)}.match-league{font-size:11px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.06em}.match-pair{font-weight:900;font-size:15px;margin:8px 0}.match-meta{font-size:12px;color:var(--muted)}.forecast-line{margin-top:12px;padding:10px;border-radius:11px;background:#f7f2e7;font-size:13px}.forecast-line strong{color:#80601e}.prob-row{display:flex;gap:6px;margin-top:9px}.prob{flex:1;text-align:center;border-radius:8px;background:#f2eee5;padding:7px 3px;font-size:11px;color:#625d52}.prob b{display:block;color:#25231f;font-size:13px}.match-reason{font-size:12px;color:#625d52;margin:9px 0 0}.live-score{font-size:22px;font-weight:950;margin:8px 0;color:#287a57}.featured-tag{font-size:10px;font-weight:900;color:#80601e;letter-spacing:.08em;text-transform:uppercase}@media(max-width:600px){.match-grid{grid-template-columns:1fr}.match-subhead{align-items:flex-start;flex-direction:column}}
 </style>
 </head>
 <body>
@@ -67,14 +69,15 @@ body{background:radial-gradient(ellipse at 80% -10%,#f3e8c9 0,transparent 38%),v
 <aside class="hero-card"><div class="card-head"><span>FEATURED MATCH PREVIEW</span><span class="live">● EDITORIAL</span></div><div class="matchteams"><div><div class="team-badge">⚽</div><div class="teamname">HOME</div><div class="matchmeta">Home side</div></div><div class="vs">VS</div><div><div class="team-badge">⚽</div><div class="teamname">AWAY</div><div class="matchmeta">Away side</div></div></div><div class="preview-note"><strong>THE PUNDIT VIEW</strong><p>Good analysis looks beyond a headline prediction. Compare recent form, team news, tactical matchups and the risks that could change the game.</p></div></aside></section>
 <div class="statsstrip"><div class="stat"><strong>2</strong><span>Sports categories</span></div><div class="stat"><strong>360°</strong><span>Match perspective</span></div><div class="stat"><strong>Clear</strong><span>Risk explanations</span></div></div>
 <section class="section" id="match-predictions">
- <div class="section-head"><div><div class="eyebrow">Match prediction centre</div><h2>Match predictions</h2><p>Review match markets, supporting factors and risk notes before making your own decision.</p></div><a class="textlink" href="#games">Browse markets →</a></div>
- <div class="strategygrid">
-  <article class="strategy"><i class="dot"></i><b>Match result</b><small>Home win, draw or away win — compare recent form and team news.</small></article>
-  <article class="strategy"><i class="dot"></i><b>Goals market</b><small>Over/under goals and both teams to score — check scoring trends.</small></article>
-  <article class="strategy"><i class="dot"></i><b>Double chance</b><small>Two-result selections — still carry risk and are never guaranteed.</small></article>
-  <article class="strategy"><i class="dot"></i><b>Featured analysis</b><small>Highlight selections only when fixture data and reasoning have been reviewed.</small></article>
- </div>
- <div class="player-status"><strong>Featured predictions are being prepared.</strong><br>Live fixtures and evidence-based match forecasts are not connected yet. The cards below are examples, not today's confirmed matches or guaranteed outcomes.</div>
+ <div class="section-head"><div><div class="eyebrow">Live football intelligence</div><h2>Match predictions</h2><p>Upcoming fixtures, live scores and provider forecasts with supporting context.</p></div><button class="outlinebtn" id="refreshMatches" type="button">↻ Refresh fixtures</button></div>
+ <div class="match-controls"><label>Fixture date <input type="date" id="matchDate"></label><span id="matchUpdated" class="match-muted">Loading current fixtures…</span></div>
+ <div class="match-subhead"><h3>Featured predictions</h3><span>Ranked by provider confidence · not guarantees</span></div>
+ <div id="featuredPredictions" class="match-grid"><div class="player-status">Loading featured forecasts…</div></div>
+ <div class="match-subhead"><h3>Upcoming fixtures & forecasts</h3><span>Forecasts shown only when available</span></div>
+ <div id="upcomingMatches" class="match-grid"><div class="player-status">Fetching fixtures…</div></div>
+ <div class="match-subhead"><h3>Live matches</h3><span>Scores update when you refresh</span></div>
+ <div id="liveMatches" class="match-grid"><div class="player-status">Checking live matches…</div></div>
+ <p class="player-footnote">Forecasts and probability percentages are supplied by API-Football where available. They are not independently verified guarantees. Missing forecasts are left blank rather than invented.</p>
 </section>
 <section class="section" id="games"><div class="section-head"><div><div class="eyebrow">Build your slip</div><h2>Explore match insights</h2><p>Choose a sport, browse sample markets and build a personal shortlist.</p></div><a class="textlink" href="#slip">View my slip →</a></div>
 <div class="filters" id="datefilters"><button class="chip selected" data-date="Today">Today</button><button class="chip" data-date="Tomorrow">Tomorrow</button><button class="chip" data-date="Friday">Friday</button><button class="chip" data-date="Weekend">Weekend</button></div>
@@ -142,6 +145,43 @@ document.querySelectorAll("[data-strategy]").forEach(b=>b.addEventListener("clic
 $("search").addEventListener("input",render);$("market").addEventListener("change",render);
 const playerEndpoints={scorers:"topscorers",assists:"topassists",cleansheets:"topcleansheets",yellow:"topyellowcards",red:"topredcards"};
 const playerLabels={scorers:"Goals",assists:"Assists",cleansheets:"Clean sheets",yellow:"Yellow cards",red:"Red cards"};
+
+let matchPayload=null;
+function safeText(v){return escapeHtml(v==null?"":String(v));}
+function fmtKickoff(v){try{return new Date(v).toLocaleString("en-NG",{dateStyle:"medium",timeStyle:"short",timeZone:"Africa/Lagos"});}catch(_){return v||"Kickoff TBC";}}
+function pct(v){return Number.isFinite(Number(v))&&Number(v)>0?Math.round(Number(v))+"%":"—";}
+function forecastCard(f,featured=false){
+ const probabilities=Array.isArray(f.probabilities)?f.probabilities:[];
+ const probs=probabilities.map(p=>'<div class="prob">'+safeText(p.label)+'<b>'+pct(p.value)+'</b></div>').join("");
+ const factors=[f.homeForm&&("Home form: "+f.homeForm),f.awayForm&&("Away form: "+f.awayForm),f.homeAttack&&("Home attack: "+f.homeAttack),f.awayAttack&&("Away attack: "+f.awayAttack)].filter(Boolean).slice(0,3).join(" · ");
+ return '<article class="match-card '+(featured?"featured":"")+'">'+(featured?'<div class="featured-tag">★ Featured forecast</div>':"")+'<div class="match-league">'+safeText(f.league)+'</div><div class="match-pair">'+safeText(f.home)+' <span style="color:#9a7627">vs</span> '+safeText(f.away)+'</div><div class="match-meta">'+fmtKickoff(f.kickoff)+'</div>'+(f.unavailable?'<div class="forecast-line">Forecast unavailable for this fixture. No prediction displayed.</div>':'<div class="forecast-line"><strong>Provider pick:</strong> '+safeText(f.winner||"No clear outcome")+(f.confidence?' · '+pct(f.confidence)+' provider probability':'')+(f.underOver?' · Goals: '+safeText(f.underOver):'')+'</div>')+(probs?'<div class="prob-row">'+probs+'</div>':"")+(f.advice?'<p class="match-reason">'+safeText(f.advice)+'</p>':"")+(f.goalsHome||f.goalsAway?'<p class="match-reason">Expected goals estimate: '+safeText(f.goalsHome||"—")+' – '+safeText(f.goalsAway||"—")+'</p>':"")+(f.source?'<p class="match-reason">'+safeText(f.source)+'</p>':"")+(f.homeForm||f.awayForm||f.homeAttack||f.awayAttack?'<p class="match-reason">'+safeText(factors)+'</p>':"")+'</article>';
+}
+function renderMatches(data){
+ const fixtures=data.fixtures||[],live=data.live||[];
+ const eligible=fixtures.filter(f=>!f.unavailable&&Number(f.confidence)>0).sort((a,b)=>Number(b.confidence)-Number(a.confidence));
+ $("featuredPredictions").innerHTML=eligible.length?eligible.slice(0,3).map(f=>forecastCard(f,true)).join(""):'<div class="player-status">No provider forecasts are available for the selected date. We will not invent featured tips.</div>';
+ $("upcomingMatches").innerHTML=fixtures.length?fixtures.map(f=>forecastCard(f,false)).join(""):'<div class="player-status">No upcoming fixtures found in this date window.</div>';
+ $("liveMatches").innerHTML=live.length?live.map(f=>'<article class="match-card"><div class="match-league">● LIVE · '+safeText(f.league)+'</div><div class="match-pair">'+safeText(f.home)+' vs '+safeText(f.away)+'</div><div class="live-score">'+safeText(f.homeScore??0)+' – '+safeText(f.awayScore??0)+'</div><div class="match-meta">'+safeText(f.elapsed==null?"":f.elapsed+"′")+' · '+safeText(f.status)+'</div></article>').join(""):'<div class="player-status">No live matches detected right now.</div>';
+ $("matchUpdated").textContent="Updated "+new Date().toLocaleTimeString("en-NG",{timeZone:"Africa/Lagos"})+" · times shown in Lagos time";
+}
+async function loadMatches(){
+ const upcoming=$("upcomingMatches");upcoming.innerHTML='<div class="player-status">Loading live fixtures and forecasts…</div>';
+ $("refreshMatches").disabled=true;
+ try{
+  const date=$("matchDate").value;
+  const response=await fetch("/api/matches"+(date?"?date="+encodeURIComponent(date):""),{cache:"no-store"});
+  const data=await response.json();
+  if(!response.ok)throw new Error(data.error||"Could not load fixtures.");
+  matchPayload=data;renderMatches(data);
+ }catch(err){
+  const message='<div class="player-status error">'+safeText(err.message)+'</div>';
+  $("featuredPredictions").innerHTML=message;$("upcomingMatches").innerHTML=message;$("liveMatches").innerHTML='<div class="player-status">Live scores unavailable.</div>';
+  $("matchUpdated").textContent="Check API key, provider quota and deployment status.";
+ }finally{$("refreshMatches").disabled=false;}
+}
+$("refreshMatches").addEventListener("click",loadMatches);
+$("matchDate").addEventListener("change",loadMatches);
+
 async function loadPlayers(){
  const status=$("playerStatus"),wrap=$("playerTableWrap");
  status.hidden=false;wrap.hidden=true;status.classList.remove("error");
@@ -218,5 +258,5 @@ $("authSignOut").addEventListener("click",async()=>{
 
 async function checkSupabase(){const el=$("supabaseStatus");el.classList.remove("error");el.textContent="Checking Supabase connection…";try{const r=await fetch("/api/supabase-health");const d=await r.json();if(!r.ok||!d.connected)throw new Error(d.message||"Supabase is not configured yet.");el.textContent="Connected successfully to Supabase. Project services are responding.";}catch(e){el.classList.add("error");el.textContent=e.message||"Could not check Supabase. Make sure the Vercel environment variables are saved and redeploy.";}}
 if($("checkSupabase"))$("checkSupabase").addEventListener("click",checkSupabase);
-$("year").textContent=new Date().getFullYear();render();initAuth();
+$("year").textContent=new Date().getFullYear();render();initAuth();loadMatches();
 </script></body></html>
