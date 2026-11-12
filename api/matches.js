@@ -30,7 +30,7 @@ module.exports = async (req, res) => {
   }
   try {
     const [scheduled, live] = await Promise.all([
-      api("/fixtures?from=" + date + "&to=" + to + "&timezone=" + encodeURIComponent(tz)),
+      api("/fixtures?date=" + date + "&timezone=" + encodeURIComponent(tz)),
       api("/fixtures?live=all&timezone=" + encodeURIComponent(tz))
     ]);
     const map = new Map();
