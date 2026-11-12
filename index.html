@@ -54,6 +54,10 @@ body{background:radial-gradient(ellipse at 80% -10%,#f3e8c9 0,transparent 38%),v
 .player-status.error{color:#9b3d31;border-color:#d9a39a;background:#fff8f6}
 .player-footnote{color:var(--muted);font-size:12px;margin-top:10px}
 @media(max-width:480px){.player-tools select{width:100%}}
+
+.auth-panel{border:1px solid var(--line);background:#fff;border-radius:18px;padding:22px;max-width:560px}
+.auth-form{display:grid;gap:12px}.auth-form input{width:100%;padding:13px;border:1px solid var(--line);border-radius:10px;background:#fff;color:#25231f}
+.auth-actions{display:flex;gap:10px;flex-wrap:wrap}.auth-message{font-size:13px;color:var(--muted);margin-top:10px}.auth-message.error{color:#a33}.auth-user{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -84,10 +88,26 @@ body{background:radial-gradient(ellipse at 80% -10%,#f3e8c9 0,transparent 38%),v
  <p class="player-footnote">Statistics are supplied by API-Football and depend on your API plan, selected league and season. Rankings are descriptive, not predictions of future performance.</p>
 </section>
 <section class="section" id="membership"><div class="section-head"><div><div class="eyebrow">The Pro Pundits edge</div><h2>Insight for every kind of fan.</h2><p>Thoughtful analysis, clear explanations and a premium reading experience.</p></div></div><div class="strategygrid"><article class="strategy"><i class="dot"></i><b>Match previews</b><small>Form, context and tactical talking points.</small></article><article class="strategy"><i class="dot"></i><b>Player trends</b><small>Explore role, minutes and performance context.</small></article><article class="strategy"><i class="dot"></i><b>Quick slips</b><small>Collect markets to review in one place.</small></article><article class="strategy"><i class="dot"></i><b>Premium analysis</b><small>Membership details will be announced soon.</small></article></div></section>
+
+<section class="section" id="authSection">
+ <div class="section-head"><div><div class="eyebrow">Your Pro Pundits account</div><h2>Sign in or create an account</h2><p>Register with your email and password. Supabase securely manages authentication.</p></div></div>
+ <div class="auth-panel">
+  <div id="authSignedOut">
+   <form class="auth-form" id="authForm">
+    <label for="authEmail">Email address</label><input id="authEmail" type="email" autocomplete="email" required placeholder="you@example.com">
+    <label for="authPassword">Password</label><input id="authPassword" type="password" autocomplete="current-password" minlength="6" required placeholder="At least 6 characters">
+    <div class="auth-actions"><button class="primary" type="submit" id="authSubmit">Create account</button><button class="outlinebtn" type="button" id="authToggle">Already registered? Sign in</button></div>
+   </form>
+  </div>
+  <div id="authSignedIn" hidden><div class="auth-user"><div><strong>You're signed in</strong><div id="authUserEmail" class="auth-message"></div></div><button class="outlinebtn" id="authSignOut" type="button">Sign out</button></div></div>
+  <p id="authMessage" class="auth-message" role="status">Loading secure account services…</p>
+ </div>
+</section>
 <section class="section" id="services"><div class="section-head"><div><div class="eyebrow">Platform connection</div><h2>Supabase services</h2><p>Check whether your secure Supabase project settings are connected to this deployment.</p></div><button class="outlinebtn" id="checkSupabase" type="button">Check connection</button></div><div id="supabaseStatus" class="player-status">Checking Supabase configuration…</div><p class="player-footnote">Your Supabase URL and anon key must be added as Vercel environment variables. Never place a service-role key in the website or GitHub.</p></section>
 <div class="disclaimer"><strong>Important:</strong> All cards currently shown are illustrative interface examples, not live fixtures, verified statistics or betting advice. Sports outcomes are uncertain; no prediction is guaranteed. Check independent sources, follow local laws and gamble responsibly. 18+ where required.</div>
 </main><footer class="shell footer"><span>© <span id="year"></span> Pro Pundits. Built for smarter sports conversations.</span><span>White & gold edition · Analysis without guarantees</span></footer>
 <nav class="bottomnav"><a class="active" href="#home"><span>⌂</span>Home</a><a href="#games"><span>⌕</span>Browse</a><a href="#players"><span>★</span>Players</a><a href="#slip"><span>▤</span>My Slip</a><a href="#membership"><span>◎</span>Profile</a></nav><div class="toast" id="toast" role="status"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const samples=[
 {id:1,sport:"Football",date:"Today",market:"Goals",event:"Sample fixture · Football",title:"Over 1.5 total goals",odds:"1.42",risk:"Review team news",detail:"Illustrative market card — verify current data"},
@@ -140,7 +160,53 @@ document.querySelectorAll("[data-category]").forEach(b=>b.addEventListener("clic
 $("playerLeague").addEventListener("change",loadPlayers);$("playerSeason").addEventListener("change",loadPlayers);
 $("playerSearch").addEventListener("input",renderPlayers);
 
+
+let authMode="signup",authClient=null;
+async function initAuth(){
+ const msg=$("authMessage");
+ try{
+  if(!window.supabase||!window.supabase.createClient)throw new Error("The authentication library could not load. Check your internet connection and refresh.");
+  const cfgResponse=await fetch("/api/supabase-config",{cache:"no-store"});
+  const cfg=await cfgResponse.json();
+  if(!cfgResponse.ok||!cfg.url||!cfg.anonKey)throw new Error(cfg.message||"Supabase public configuration is missing. Check Vercel environment variables and redeploy.");
+  authClient=window.supabase.createClient(cfg.url,cfg.anonKey);
+  const {data:{session}}=await authClient.auth.getSession();
+  showAuthSession(session);
+  authClient.auth.onAuthStateChange((_event,session)=>showAuthSession(session));
+  msg.textContent="Account services are ready. Create an account or sign in.";
+ }catch(e){msg.textContent=e.message||"Could not initialize account services.";msg.classList.add("error");}
+}
+function showAuthSession(session){
+ $("authSignedOut").hidden=!!session;$("authSignedIn").hidden=!session;
+ $("authUserEmail").textContent=session?.user?.email||"";
+}
+$("authToggle").addEventListener("click",()=>{
+ authMode=authMode==="signup"?"signin":"signup";
+ $("authSubmit").textContent=authMode==="signup"?"Create account":"Sign in";
+ $("authToggle").textContent=authMode==="signup"?"Already registered? Sign in":"New here? Create account";
+ $("authPassword").autocomplete=authMode==="signup"?"new-password":"current-password";
+ $("authMessage").textContent=authMode==="signup"?"Create your Pro Pundits account.":"Sign in to your Pro Pundits account.";
+ $("authMessage").classList.remove("error");
+});
+$("authForm").addEventListener("submit",async e=>{
+ e.preventDefault();if(!authClient){$("authMessage").textContent="Account services are not ready. Refresh and try again.";return;}
+ const email=$("authEmail").value.trim(),password=$("authPassword").value;
+ $("authSubmit").disabled=true;$("authMessage").classList.remove("error");$("authMessage").textContent="Please wait…";
+ try{
+  const result=authMode==="signup"?await authClient.auth.signUp({email,password}):await authClient.auth.signInWithPassword({email,password});
+  if(result.error)throw result.error;
+  $("authMessage").textContent=authMode==="signup"?(result.data.session?"Account created and signed in.":"Account created. Check your email for a confirmation link, then sign in."):"Successfully signed in.";
+  if(result.data.session)showAuthSession(result.data.session);
+ }catch(err){$("authMessage").textContent=err.message||"Authentication failed."; $("authMessage").classList.add("error");}
+ finally{$("authSubmit").disabled=false;}
+});
+$("authSignOut").addEventListener("click",async()=>{
+ if(!authClient)return;const {error}=await authClient.auth.signOut();
+ $("authMessage").textContent=error?error.message:"You have signed out.";
+ if(error)$("authMessage").classList.add("error");
+});
+
 async function checkSupabase(){const el=$("supabaseStatus");el.classList.remove("error");el.textContent="Checking Supabase connection…";try{const r=await fetch("/api/supabase-health");const d=await r.json();if(!r.ok||!d.connected)throw new Error(d.message||"Supabase is not configured yet.");el.textContent="Connected successfully to Supabase. Project services are responding.";}catch(e){el.classList.add("error");el.textContent=e.message||"Could not check Supabase. Make sure the Vercel environment variables are saved and redeploy.";}}
 if($("checkSupabase"))$("checkSupabase").addEventListener("click",checkSupabase);
-$("year").textContent=new Date().getFullYear();render();
+$("year").textContent=new Date().getFullYear();render();initAuth();
 </script></body></html>
