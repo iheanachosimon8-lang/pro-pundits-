@@ -164,6 +164,17 @@ function renderMatches(data){
  $("liveMatches").innerHTML=live.length?live.map(f=>'<article class="match-card"><div class="match-league">● LIVE · '+safeText(f.league)+'</div><div class="match-pair">'+safeText(f.home)+' vs '+safeText(f.away)+'</div><div class="live-score">'+safeText(f.homeScore??0)+' – '+safeText(f.awayScore??0)+'</div><div class="match-meta">'+safeText(f.elapsed==null?"":f.elapsed+"′")+' · '+safeText(f.status)+'</div></article>').join(""):'<div class="player-status">No live matches detected right now.</div>';
  $("matchUpdated").textContent="Updated "+new Date().toLocaleTimeString("en-NG",{timeZone:"Africa/Lagos"})+" · times shown in Lagos time";
 }
+async function loadLiveScores(){
+ const box=$("liveMatches");
+ try{
+  const response=await fetch("/api/live",{cache:"no-store"});
+  const data=await response.json();
+  if(!response.ok)throw new Error(data.error||"Live scores unavailable.");
+  const live=data.live||[];
+  box.innerHTML=live.length?live.map(f=>'<article class="match-card"><div class="match-league">● LIVE · '+safeText(f.league)+'</div><div class="match-pair">'+safeText(f.home)+' vs '+safeText(f.away)+'</div><div class="live-score">'+safeText(f.homeScore??0)+' – '+safeText(f.awayScore??0)+'</div><div class="match-meta">'+safeText(f.elapsed==null?"":f.elapsed+"′")+' · '+safeText(f.status)+'</div></article>').join(""):'<div class="player-status">No live matches detected right now. Scores will refresh automatically.</div>';
+  $("matchUpdated").textContent="Live scores checked "+new Date().toLocaleTimeString("en-NG",{timeZone:"Africa/Lagos"})+" · refreshes every minute";
+ }catch(err){box.innerHTML='<div class="player-status error">'+safeText(err.message)+'</div>';}
+}
 async function loadMatches(){
  const upcoming=$("upcomingMatches");upcoming.innerHTML='<div class="player-status">Loading live fixtures and forecasts…</div>';
  $("refreshMatches").disabled=true;
@@ -181,6 +192,7 @@ async function loadMatches(){
 }
 $("refreshMatches").addEventListener("click",loadMatches);
 $("matchDate").addEventListener("change",loadMatches);
+setInterval(loadLiveScores,60000);
 
 async function loadPlayers(){
  const status=$("playerStatus"),wrap=$("playerTableWrap");
@@ -258,5 +270,5 @@ $("authSignOut").addEventListener("click",async()=>{
 
 async function checkSupabase(){const el=$("supabaseStatus");el.classList.remove("error");el.textContent="Checking Supabase connection…";try{const r=await fetch("/api/supabase-health");const d=await r.json();if(!r.ok||!d.connected)throw new Error(d.message||"Supabase is not configured yet.");el.textContent="Connected successfully to Supabase. Project services are responding.";}catch(e){el.classList.add("error");el.textContent=e.message||"Could not check Supabase. Make sure the Vercel environment variables are saved and redeploy.";}}
 if($("checkSupabase"))$("checkSupabase").addEventListener("click",checkSupabase);
-$("year").textContent=new Date().getFullYear();render();initAuth();loadMatches();
+$("year").textContent=new Date().getFullYear();render();initAuth();loadMatches();loadLiveScores();
 </script></body></html>
