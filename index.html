@@ -189,8 +189,9 @@ async function loadMatches(){
   matchPayload=data;renderMatches(data);
  }catch(err){
   const message='<div class="player-status error">'+safeText(err.message)+'</div>';
-  $("featuredPredictions").innerHTML=message;$("upcomingMatches").innerHTML=message;$("liveMatches").innerHTML='<div class="player-status">Live scores unavailable.</div>';
-  $("matchUpdated").textContent="Check API key, provider quota and deployment status.";
+  $("featuredPredictions").innerHTML=message;$("upcomingMatches").innerHTML=message;
+  $("matchUpdated").textContent="Fixtures and predictions could not load. Live scores are checked separately.";
+  loadLiveScores();
  }finally{$("refreshMatches").disabled=false;}
 }
 $("refreshMatches").addEventListener("click",loadMatches);
