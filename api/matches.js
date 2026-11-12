@@ -6,7 +6,10 @@ module.exports = async (req, res) => {
   const key = process.env.API_FOOTBALL_KEY;
   if (!key) return res.status(503).json({ error: "Football data is not connected. Add API_FOOTBALL_KEY in Vercel Environment Variables." });
   const tz = "Africa/Lagos";
-  const date = /^\d{4}-\d{2}-\d{2}$/.test(String(req.query.date || "")) ? String(req.query.date) : new Date().toLocaleDateString("en-CA", { timeZone: tz });
+  const parts = new Intl.DateTimeFormat("en-US", { timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date());
+  const lagosDate = parts.find(p => p.type === "year").value + "-" + parts.find(p => p.type === "month").value + "-" + parts.find(p => p.type === "day").value;
+  const requestedDate = String(req.query.date || "");
+  const date = /^\d{4}-\d{2}-\d{2}$/.test(requestedDate) ? requestedDate : lagosDate;
   const start = new Date(date + "T00:00:00Z");
   if (Number.isNaN(start.getTime())) return res.status(400).json({ error: "Invalid date." });
   const end = new Date(start); end.setUTCDate(end.getUTCDate() + 3);
