@@ -16,7 +16,13 @@ module.exports = async (req, res) => {
   async function api(path) {
     const r = await fetch(base + path, { headers });
     const d = await r.json();
-    if (!r.ok || (d.errors && Object.keys(d.errors).length)) throw new Error("Football data provider rejected the request.");
+    if (!r.ok || (d.errors && Object.keys(d.errors).length)) {
+      const details = d.errors && Object.keys(d.errors).length
+        ? Object.values(d.errors).map(v => String(v)).join("; ")
+        : "HTTP " + r.status;
+      console.error("API-Football request failed:", path.split("?")[0], r.status, details);
+      throw new Error("Football data provider error (" + r.status + "): " + details.slice(0, 240));
+    }
     return d.response || [];
   }
   try {
