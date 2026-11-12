@@ -28,7 +28,7 @@ module.exports = async (req, res) => {
     [...live, ...scheduled].forEach(f => { if (f && f.fixture && f.teams) map.set(f.fixture.id, f); });
     const fixtures = [...map.values()].sort((a,b) => new Date(a.fixture.date)-new Date(b.fixture.date));
     const liveStatuses = new Set(["1H","HT","2H","ET","BT","P","LIVE"]);
-    const upcoming = fixtures.filter(f => !liveStatuses.has(f.fixture.status.short) && f.fixture.status.short !== "FT").slice(0,8);
+    const upcoming = fixtures.filter(f => !liveStatuses.has(f.fixture.status.short) && f.fixture.status.short !== "FT").slice(0,5);
     const forecastRows = await Promise.all(upcoming.map(async f => {
       try {
         const p = await api("/predictions?fixture=" + f.fixture.id);
