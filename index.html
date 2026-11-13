@@ -109,10 +109,11 @@ body{background:radial-gradient(ellipse at 80% -10%,#f3e8c9 0,transparent 38%),v
    <form class="auth-form" id="authForm">
     <label for="authEmail">Email address</label><input id="authEmail" type="email" autocomplete="email" required placeholder="you@example.com">
     <label for="authPassword">Password</label><input id="authPassword" type="password" autocomplete="current-password" minlength="6" required placeholder="At least 6 characters">
-    <div class="auth-actions"><button class="primary" type="submit" id="authSubmit">Create account</button><button class="outlinebtn" type="button" id="authToggle">Already registered? Sign in</button></div>
+    <div class="auth-actions"><button class="primary" type="submit" id="authSubmit">Create account</button><button class="outlinebtn" type="button" id="authToggle">Already registered? Sign in</button><button class="outlinebtn" type="button" id="authForgotPassword">Forgot password?</button></div>
    </form>
   </div>
   <div id="authSignedIn" hidden><div class="auth-user"><div><strong>You're signed in</strong><div id="authUserEmail" class="auth-message"></div></div><button class="outlinebtn" id="authSignOut" type="button">Sign out</button></div></div>
+  <div id="authRecoveryPanel" hidden><form class="auth-form" id="authRecoveryForm"><strong>Choose a new password</strong><label for="authNewPassword">New password</label><input id="authNewPassword" type="password" autocomplete="new-password" minlength="8" required placeholder="At least 8 characters"><button class="primary" type="submit" id="authRecoverySubmit">Save new password</button></form></div>
   <p id="authMessage" class="auth-message" role="status">Preparing your account…</p>
  </div>
 </section>
@@ -227,7 +228,7 @@ $("playerLeague").addEventListener("change",loadPlayers);$("playerSeason").addEv
 $("playerSearch").addEventListener("input",renderPlayers);
 
 
-let authMode="signup",authClient=null;
+let authMode="signup",authClient=null,authRecoveryMode=false;
 async function initAuth(){
  const msg=$("authMessage");
  try{
@@ -236,14 +237,18 @@ async function initAuth(){
   const cfg=await cfgResponse.json();
   if(!cfgResponse.ok||!cfg.url||!cfg.anonKey)throw new Error(cfg.message||"Supabase public configuration is missing. Check Vercel environment variables and redeploy.");
   authClient=window.supabase.createClient(cfg.url,cfg.anonKey);
+  authClient.auth.onAuthStateChange((event,session)=>{
+   if(event==="PASSWORD_RECOVERY"){authRecoveryMode=true;showAuthSession(session);$("authMessage").textContent="Enter a new password for your account.";}
+   else showAuthSession(session);
+  });
   const {data:{session}}=await authClient.auth.getSession();
   showAuthSession(session);
-  authClient.auth.onAuthStateChange((_event,session)=>showAuthSession(session));
   msg.textContent="Your account is ready. Create an account or sign in.";
  }catch(e){msg.textContent=e.message||"Could not initialize account services.";msg.classList.add("error");}
 }
 function showAuthSession(session){
- $("authSignedOut").hidden=!!session;$("authSignedIn").hidden=!session;
+ $("authSignedOut").hidden=!!session||authRecoveryMode;$("authSignedIn").hidden=!session||authRecoveryMode;
+ $("authRecoveryPanel").hidden=!authRecoveryMode;
  $("authUserEmail").textContent=session?.user?.email||"";
 }
 $("authToggle").addEventListener("click",()=>{
@@ -265,6 +270,31 @@ $("authForm").addEventListener("submit",async e=>{
   if(result.data.session)showAuthSession(result.data.session);
  }catch(err){$("authMessage").textContent=err.message||"Authentication failed."; $("authMessage").classList.add("error");}
  finally{$("authSubmit").disabled=false;}
+});
+$("authForgotPassword").addEventListener("click",async()=>{
+ if(!authClient){$("authMessage").textContent="Account services are not ready. Refresh and try again.";return;}
+ const email=$("authEmail").value.trim();
+ if(!email){$("authEmail").focus();$("authMessage").textContent="Enter your email address first, then tap Forgot password?";return;}
+ const button=$("authForgotPassword");button.disabled=true;$("authMessage").classList.remove("error");$("authMessage").textContent="Sending password reset email…";
+ try{
+  const {error}=await authClient.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin});
+  if(error)throw error;
+  $("authMessage").textContent="If an account exists for that email, a password reset link has been sent. Check your inbox and spam folder.";
+ }catch(err){$("authMessage").textContent=err.message||"Could not send the password reset email.";$("authMessage").classList.add("error");}
+ finally{button.disabled=false;}
+});
+$("authRecoveryForm").addEventListener("submit",async e=>{
+ e.preventDefault();if(!authClient)return;
+ const password=$("authNewPassword").value,button=$("authRecoverySubmit");
+ if(password.length<8){$("authMessage").textContent="Use at least 8 characters for your new password.";$("authMessage").classList.add("error");return;}
+ button.disabled=true;$("authMessage").classList.remove("error");$("authMessage").textContent="Updating your password…";
+ try{
+  const {data,error}=await authClient.auth.updateUser({password});if(error)throw error;
+  authRecoveryMode=false;showAuthSession(data.user?{user:data.user}:null);
+  $("authMessage").textContent="Your password has been changed successfully. You can now sign in with it.";
+  $("authNewPassword").value="";
+ }catch(err){$("authMessage").textContent=err.message||"Could not update your password. Open the latest reset email link and try again.";$("authMessage").classList.add("error");}
+ finally{button.disabled=false;}
 });
 $("authSignOut").addEventListener("click",async()=>{
  if(!authClient)return;const {error}=await authClient.auth.signOut();
