@@ -14,7 +14,13 @@ module.exports = async (req, res) => {
     const url = "https://v3.football.api-sports.io/players/" + endpoints[category] + "?league=" + encodeURIComponent(league) + "&season=" + encodeURIComponent(season);
     const upstream = await fetch(url, { headers: { "x-apisports-key": key } });
     const data = await upstream.json();
-    if (!upstream.ok || (data.errors && Object.keys(data.errors).length)) return res.status(502).json({ error: "The statistics provider rejected the request. Check your API key, plan and season." });
+    if (!upstream.ok || (data.errors && Object.keys(data.errors).length)) {
+      const details = data.errors && Object.keys(data.errors).length
+        ? Object.entries(data.errors).map(([field, message]) => field + ": " + (typeof message === "string" ? message : JSON.stringify(message))).join("; ")
+        : "HTTP " + upstream.status;
+      console.error("API-Football player statistics error", { category, league, season, details });
+      return res.status(502).json({ error: "Football statistics provider error: " + details });
+    }
     const players = (data.response || []).map(row => {
       const stat = (row.statistics || [])[0] || {};
       const games = stat.games || {}, goals = stat.goals || {}, cards = stat.cards || {};
