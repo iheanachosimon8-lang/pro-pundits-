@@ -1,6 +1,6 @@
 // Vercel serverless endpoint: keeps the API-Football key on the server.
 module.exports = async (req, res) => {
-  res.setHeader("Cache-Control", "s-maxage=3600, stale-while-revalidate=7200");
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
   if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed." });
   const key = process.env.API_FOOTBALL_KEY;
   if (!key) return res.status(503).json({ error: "Player statistics are not connected yet. Add API_FOOTBALL_KEY in Vercel → Settings → Environment Variables, then redeploy." });
