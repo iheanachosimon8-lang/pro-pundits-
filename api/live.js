@@ -1,6 +1,6 @@
 // Live scores and key match signals. Provider key stays server-side.
 module.exports = async (req, res) => {
-  res.setHeader("Cache-Control", "s-maxage=45, stale-while-revalidate=15");
+  res.setHeader("Cache-Control", "s-maxage=120, stale-while-revalidate=180");
   if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed." });
   const key = process.env.API_FOOTBALL_KEY;
   if (!key) return res.status(503).json({ error: "Football data is not connected. Check API_FOOTBALL_KEY in Vercel." });
@@ -14,10 +14,10 @@ module.exports = async (req, res) => {
   }
   try {
     const fixtures = await get("/fixtures?live=all&timezone=Africa%2FLagos");
-    // Fetch event timelines for up to 10 live fixtures to keep API usage controlled.
+    // Fetch event timelines for at most 3 live fixtures to keep API usage controlled.
     const live = await Promise.all(fixtures.map(async (f, index) => {
       let signals = [];
-      if (index < 10 && f.fixture && f.fixture.id) {
+      if (index < 3 && f.fixture && f.fixture.id) {
         try {
           const events = await get("/fixtures/events?fixture=" + f.fixture.id);
           signals = events.filter(e => {
