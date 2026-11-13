@@ -32,6 +32,9 @@ module.exports = async (req, res) => {
       return { name: row.player && row.player.name, photo: row.player && row.player.photo, team: stat.team && stat.team.name, appearances: games.appearences || 0, value, rating: games.rating ? Number(games.rating).toFixed(2) : "—" };
     });
     players.sort((a,b) => Number(b.value) - Number(a.value));
+    // Cache successful historical stats at the edge to reduce repeat provider calls.
+    // Error responses remain no-store so a temporary provider failure is not cached.
+    res.setHeader("Cache-Control", "s-maxage=3600, stale-while-revalidate=7200");
     return res.status(200).json({ players: players.slice(0,30), category, league, season });
   } catch (error) {
     return res.status(502).json({ error: "Could not reach the football statistics provider. Please try again later." });
