@@ -1,7 +1,7 @@
 // Live football fixtures and evidence-led forecasts.
 // API-Football key stays server-side. Forecasts are provider estimates, never guarantees.
 module.exports = async (req, res) => {
-  res.setHeader("Cache-Control", "s-maxage=900, stale-while-revalidate=1800");
+  res.setHeader("Cache-Control", "s-maxage=1800, stale-while-revalidate=3600");
   if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed." });
   const key = process.env.API_FOOTBALL_KEY;
   if (!key) return res.status(503).json({ error: "Football data is not connected. Add API_FOOTBALL_KEY in Vercel Environment Variables." });
@@ -29,15 +29,12 @@ module.exports = async (req, res) => {
     return d.response || [];
   }
   try {
-    const [scheduled, live] = await Promise.all([
-      api("/fixtures?date=" + date + "&timezone=" + encodeURIComponent(tz)),
-      api("/fixtures?live=all&timezone=" + encodeURIComponent(tz))
-    ]);
-    const map = new Map();
-    [...live, ...scheduled].forEach(f => { if (f && f.fixture && f.teams) map.set(f.fixture.id, f); });
-    const fixtures = [...map.values()].sort((a,b) => new Date(a.fixture.date)-new Date(b.fixture.date));
+    // Live scores are served by /api/live. Keep this endpoint focused on the selected date.
+    const scheduled = await api("/fixtures?date=" + date + "&timezone=" + encodeURIComponent(tz));
+    const fixtures = scheduled.filter(f => f && f.fixture && f.teams)
+      .sort((a,b) => new Date(a.fixture.date)-new Date(b.fixture.date));
     const liveStatuses = new Set(["1H","HT","2H","ET","BT","P","LIVE"]);
-    const upcoming = fixtures.filter(f => !liveStatuses.has(f.fixture.status.short) && f.fixture.status.short !== "FT").slice(0,5);
+    const upcoming = fixtures.filter(f => !liveStatuses.has(f.fixture.status.short) && f.fixture.status.short !== "FT").slice(0,3);
     const forecastRows = await Promise.all(upcoming.map(async f => {
       try {
         const p = await api("/predictions?fixture=" + f.fixture.id);
@@ -71,12 +68,7 @@ module.exports = async (req, res) => {
         return { fixtureId:f.fixture.id, home:f.teams.home.name, away:f.teams.away.name, league:f.league.name, kickoff:f.fixture.date, status:f.fixture.status.short, unavailable:true };
       }
     }));
-    const liveRows = fixtures.filter(f=>liveStatuses.has(f.fixture.status.short)).map(f=>({
-      fixtureId:f.fixture.id, home:f.teams.home.name, away:f.teams.away.name,
-      league:f.league.name, kickoff:f.fixture.date, status:f.fixture.status.short,
-      elapsed:f.fixture.status.elapsed, homeScore:f.goals.home, awayScore:f.goals.away
-    }));
-    return res.status(200).json({ date, timezone:tz, fixtures:forecastRows, live:liveRows, count:fixtures.length });
+    return res.status(200).json({ date, timezone:tz, fixtures:forecastRows, live:[], count:fixtures.length });
   } catch (e) {
     return res.status(502).json({ error: e.message || "Could not load live football data. Try again shortly." });
   }
