@@ -8,7 +8,7 @@ module.exports = async (req, res) => {
   const endpoints = { scorers:"topscorers", assists:"topassists", yellow:"topyellowcards", red:"topredcards" };
   if (!endpoints[category]) return res.status(400).json({ error: "Unsupported statistics category." });
   const league = String(req.query.league || "39");
-  const season = String(req.query.season || "2026");
+  const season = String(req.query.season || "2024");
   if (!/^\d{1,4}$/.test(league) || !/^20\d{2}$/.test(season)) return res.status(400).json({ error: "Invalid league or season." });
   try {
     const url = "https://v3.football.api-sports.io/players/" + endpoints[category] + "?league=" + encodeURIComponent(league) + "&season=" + encodeURIComponent(season);
