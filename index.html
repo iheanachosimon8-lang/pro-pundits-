@@ -87,10 +87,10 @@ body{background:radial-gradient(ellipse at 80% -10%,#f3e8c9 0,transparent 38%),v
 <div class="contentgrid"><div><div class="picklist" id="picklist"></div><p id="empty" class="slipempty" hidden>No sample cards match those filters. Try another search or market.</p></div><aside class="sidecol"><div class="sidecard" id="insights"><h3>📈 Analysis snapshot</h3><div class="trendrow"><span>Recent form</span><b>Review context</b></div><div class="trendrow"><span>Home / away</span><b>Compare splits</b></div><div class="trendrow"><span>Team news</span><b>Check line-ups</b></div><div class="trendrow"><span>Risk profile</span><b>Always varies</b></div><p class="slipempty">We explain the factors to check rather than inventing live statistics.</p></div><div class="sidecard" id="slip"><h3>🧾 My Quick Slip <span id="slipcount2">(0)</span></h3><div id="slipitems"><p class="slipempty">Add a market card to start your shortlist.</p></div><button class="outlinebtn" style="width:100%;margin-top:12px" onclick="clearSlip()">Clear shortlist</button></div></aside></div></section>
 
 <section class="section" id="players">
- <div class="section-head"><div><div class="eyebrow">Player performance centre</div><h2>Best players & season statistics</h2><p>Explore verified league leaderboards for goals, assists, clean sheets and discipline.</p></div></div>
+ <div class="section-head"><div><div class="eyebrow">Player performance centre</div><h2>Best players & season statistics</h2><p>Explore historical league leaderboards for goals, assists, clean sheets and discipline.</p></div></div>
  <div class="player-tools">
   <select id="playerLeague" aria-label="League"><option value="39">Premier League</option><option value="140">La Liga</option><option value="135">Serie A</option><option value="78">Bundesliga</option><option value="61">Ligue 1</option><option value="2">UEFA Champions League</option><option value="世界">Other league</option></select>
-  <select id="playerSeason" aria-label="Season"><option value="2026">2026 season</option><option value="2025">2025 season</option><option value="2024">2024 season</option></select>
+  <select id="playerSeason" aria-label="Season"><option value="2024" selected>2024 season · latest available on Free plan</option><option value="2023">2023 season</option><option value="2022">2022 season</option></select>
   <input id="playerSearch" placeholder="Search player or club…" aria-label="Search players">
  </div>
  <div class="player-tabs" id="playerTabs">
@@ -98,7 +98,7 @@ body{background:radial-gradient(ellipse at 80% -10%,#f3e8c9 0,transparent 38%),v
  </div>
  <div id="playerStatus" class="player-status">Connect your API-Football key in Vercel to load verified player statistics. The setup steps are below.</div>
  <div class="player-table-wrap" id="playerTableWrap" hidden><table class="player-table"><thead id="playerHead"></thead><tbody id="playerRows"></tbody></table></div>
- <p class="player-footnote">Statistics are supplied by API-Football and depend on your API plan, selected league and season. Rankings are descriptive, not predictions of future performance.</p>
+ <p class="player-footnote">Historical statistics are supplied by API-Football. The Free plan currently supports seasons 2022–2024; 2024 is selected by default. Rankings are descriptive, not predictions of future performance.</p>
 </section>
 <section class="section" id="membership"><div class="section-head"><div><div class="eyebrow">The Pro Pundits edge</div><h2>Insight for every kind of fan.</h2><p>Thoughtful analysis, clear explanations and a premium reading experience.</p></div></div><div class="strategygrid"><article class="strategy"><i class="dot"></i><b>Match previews</b><small>Form, context and tactical talking points.</small></article><article class="strategy"><i class="dot"></i><b>Player trends</b><small>Explore role, minutes and performance context.</small></article><article class="strategy"><i class="dot"></i><b>Quick slips</b><small>Collect markets to review in one place.</small></article><article class="strategy"><i class="dot"></i><b>Premium analysis</b><small>Membership details will be announced soon.</small></article></div></section>
 
