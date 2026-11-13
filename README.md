@@ -1,47 +1,50 @@
 # Pro Pundits
 
-Premium football analysis and player-statistics website. The interface uses a white, gold and charcoal theme.
+Pro Pundits is a responsive football predictions and player-statistics website, presented in a white, gold and charcoal theme.
 
-## Deploy on Vercel
+## Live website
 
-1. Import this GitHub repository into Vercel.
-2. Set the project framework preset to **Other** (static HTML + Vercel Functions).
-3. Keep the root directory as `./`.
-4. Deploy. The homepage is `index.html`.
+https://pro-pundits.vercel.app
 
-## Connect live player statistics
+## Repository contents
 
-The player leaderboard uses API-Football (API-Sports).
+- `index.html` — website interface, navigation and client-side interactions.
+- `api/matches.js` — upcoming fixtures and provider prediction data.
+- `api/live.js` — live scores and selected match event details.
+- `api/players.js` — player-statistics leaderboard.
+- `api/supabase-config.js` and `api/supabase-health.js` — Supabase configuration and health-check endpoints.
+- `.env.example` — names of required environment variables (never put real secrets here).
+- `.github/workflows/deploy-pages.yml` — repository workflow configuration.
 
-1. Create an account at https://www.api-football.com/ and copy your API key from its dashboard.
-2. In Vercel, open **Project → Settings → Environment Variables**.
-3. Add `API_FOOTBALL_KEY` with your API key as the value. Apply it to Production (and Preview if needed).
-4. Save, then open **Deployments** and redeploy the latest deployment.
-5. Open the Player stats section. Choose a league and season, then select Top scorers, Assists, Clean sheets or cards.
+## Deployment
 
-Do not put the API key in `index.html`, commit it to GitHub, or share it publicly. The key is read only by the serverless function at `/api/players`.
+The production website is hosted on Vercel and is connected to the `main` branch. New commits to `main` trigger a Vercel deployment.
 
-## Connect Supabase
+For Vercel, use the **Other** framework preset and keep the project root at `./`. The API routes in `api/` are Vercel serverless functions.
 
-The homepage includes a Supabase connection check at **Platform connection**. Add these values in Vercel → Project → Settings → Environment Variables:
+## Environment variables
 
-- `SUPABASE_URL` — your Supabase Project URL (for example, `https://YOUR-PROJECT.supabase.co`).
-- `SUPABASE_ANON_KEY` — the project's publishable/anon key.
+Configure secrets in Vercel → Project → Settings → Environment Variables. Do not commit real keys to GitHub.
 
-Save both for Production (and Preview if needed), then redeploy. The `/api/supabase-health` endpoint checks the Supabase Auth health endpoint without exposing the key in browser code. Do not use or expose the Supabase service-role key in the frontend or commit credentials to GitHub.
+- `API_FOOTBALL_KEY` — server-side API-Football key used by the football-data endpoints.
+- `SUPABASE_URL` — Supabase project URL.
+- `SUPABASE_ANON_KEY` — Supabase publishable/anon key used for the supported client authentication flow.
 
-## What works now
+Never expose a Supabase service-role key in browser code. Keep all provider secrets server-side.
 
-- Responsive white-and-gold homepage and navigation.
-- Football and basketball sample market cards, search and market filters.
-- Analysis strategy selection.
-- Add/remove/clear shortlist.
-- Live player-statistics requests through the protected Vercel API route once the API key is configured.
+## API usage and season availability
 
-## Important limitations
+The site caches football responses to reduce API calls. Live scores refresh in the browser about every two minutes, and detailed event lookups are limited to a small number of live fixtures.
 
-The match cards and example markets are clearly labelled illustrative data; they are not live fixtures or verified predictions. Live match scores, real fixtures, user authentication, subscriptions/payments and a production admin panel are not connected yet. Those require trusted data sources and service configuration. No prediction is guaranteed.
+The current API-Football Free plan used for this project supports player-statistics seasons 2022–2024. The Players section defaults to 2024 and labels those records as historical. Availability of fixtures, predictions, live scores and player categories depends on API-Football plan coverage, request limits and data availability.
 
-## Local preview
+## Important user-facing limitations
 
-You can open `index.html` directly for the front-end preview. To test the API route locally, use Vercel CLI and add `API_FOOTBALL_KEY` to a local `.env.local` file (never commit that file).
+- Provider forecasts and probabilities are estimates, not guarantees.
+- A “no live matches” message means no live fixtures were returned at the time of the request; it is not itself an error.
+- Some player statistics are historical because of the current free-plan season restriction.
+- Users should verify match information independently and follow local laws. Pro Pundits does not guarantee betting outcomes.
+
+## Creator
+
+Created by **Iheanacho Simon**.
